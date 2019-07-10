@@ -7,5 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <!--RandomLayout 自定义属性-->
+    <declare-styleable name="RandomView">
+        <!--声明我们的属性，名称为default_size,取值类型为尺寸类型（dp,px等）-->
+        <attr name="max_ball_number" format="integer"></attr>
+        <attr name="circle_color" format="color"></attr>
+    </declare-styleable>
 </resources>
