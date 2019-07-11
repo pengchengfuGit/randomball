@@ -54,7 +54,7 @@ public class RandomView extends View {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         Log.d(TAG, "onLayout ");
         ballList.add(new Ball(50, Color.BLUE, 50, width / 2, height / 2));
-        if(thread==null) {
+        if (thread == null) {
             thread = new MyThread();
         }
         thread.start();
@@ -62,6 +62,7 @@ public class RandomView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
         super.onDraw(canvas);
         Log.d(TAG, "onDraw ");
         for (int i = 0; i < ballList.size(); i++) {
@@ -118,79 +119,122 @@ public class RandomView extends View {
             int x = ball.getX();
             int y = ball.getY();
             int degree = ball.getDegree();
-            Log.d(TAG, "  degree   "+degree);
-            Log.d(TAG, "  degree%   "+degree%9);
+            Log.d(TAG, "  degree   " + degree);
+            Log.d(TAG, "  degree%   " + degree / 9);
 
             //按照0-360度划分四个象限
             if (degree >= 0 && degree < 90) {
+                //按10等份去分配X轴与Y轴的位移值
                 int xL = degree / 9;
-                int yL = 10- degree / 9;
+                int yL = 10 - degree / 9;
                 //第一象限 碰撞到布局边界
                 if (ball.getX() + ball.getRadius() >= width) {
                     ball.setDegree(360 - degree);
-                    ball.setX(x -ball.getRadius());
+                    ball.setX(x - ball.getRadius());
                 } else {
-                    if(x+ball.getRadius()+1+xL >= width){
-                        ball.setX(width-ball.getRadius());
-                    }else {
-                        ball.setX(x + 1+xL);
+                    if (x + ball.getRadius() + 1 + xL >= width) {
+                        ball.setX(width - ball.getRadius());
+                    } else {
+                        ball.setX(x + 1 + xL);
                     }
                 }
                 //碰撞到布局边界
                 if (ball.getY() - ball.getRadius() <= 0) {
-                    ball.setDegree(90 + degree);
-                    ball.setY(y + 1+yL);
+                    ball.setDegree(180 - degree);
+                    ball.setY(y + 1 + yL);
                 } else {
-                    if(y-ball.getRadius()-1-yL <= 0){
+                    if (y - ball.getRadius() - 1 - yL <= 0) {
                         ball.setY(ball.getRadius());
-                    }else {
-                        ball.setY(y - 1-yL);
+                    } else {
+                        ball.setY(y - 1 - yL);
                     }
                 }
             } else if (degree >= 90 && degree < 180) {
                 //第二象限 碰撞到布局边界
+                int xL = 10 - (degree  / 9-10);
+                int yL = (degree  / 9-10);
                 if (ball.getX() + ball.getRadius() >= width) {
                     ball.setDegree(180 - degree + 180);
-                    ball.setX(x - 1);
+                    ball.setX(x - ball.getRadius());
                 } else {
-                    ball.setX(x + 1);
+                    if (x + ball.getRadius() + 1 + xL >= width) {
+                        ball.setX(width - ball.getRadius());
+                    } else {
+                        ball.setX(x + 1 + xL);
+                    }
                 }
                 //碰撞到布局边界
                 if (ball.getY() + ball.getRadius() >= height) {
                     ball.setDegree(90 - degree + 90);
-                    ball.setY(y - 1);
+                    ball.setY(y - 1-yL);
                 } else {
-                    ball.setY(y + 1);
+                    if (y + ball.getRadius() + 1 + yL >= height) {
+                        ball.setY(height - ball.getRadius());
+                    } else {
+                        ball.setY(y + 1 + yL);
+                    }
                 }
             } else if (degree >= 180 && degree < 270) {
                 //第三象限 碰撞到布局边界
+                int xL = (degree  / 9-20);
+                int yL = 10 - (degree / 9-20);
                 if (ball.getX() - ball.getRadius() <= 0) {
-                    ball.setDegree(90 - degree + 270);
-                    ball.setX(x + 1);
+                    ball.setDegree(360 - degree);
+                    ball.setX(x + 1 + xL);
                 } else {
-                    ball.setX(x - 1);
+                    if (x - ball.getRadius() - 1 - xL <= 0) {
+                        ball.setX(ball.getRadius());
+                    } else {
+                        ball.setX(x - 1 - xL);
+                    }
                 }
+//                if (ball.getX() - ball.getRadius() <= 0) {
+//                    ball.setDegree(360 - degree);
+//                    ball.setX(x + 1);
+//                } else {
+//                    ball.setX(x - 1);
+//                }
                 //碰撞到布局边界
                 if (ball.getY() + ball.getRadius() >= height) {
                     ball.setDegree(270 + 270 - degree);
-                    ball.setY(y - 1);
+                    ball.setY(y - 1-yL);
                 } else {
-                    ball.setY(y + 1);
+                    if (x + ball.getRadius() + 1 + yL >= height) {
+                        ball.setY(height - ball.getRadius());
+                    } else {
+                        ball.setY(y + 1 + yL);
+                    }
                 }
             } else if (degree >= 270 && degree < 360) {
                 //第四象限  碰撞到布局边界
+                int xL = 10 - (degree  / 9-30);
+                int yL = (degree  / 9-30);
                 if (ball.getX() - ball.getRadius() <= 0) {
-                    ball.setDegree(360-degree);
-                    ball.setX(x + 1);
+                    ball.setDegree(360 - degree);
+                    ball.setX(x + 1 + xL);
                 } else {
-                    ball.setX(x - 1);
+                    if (x - ball.getRadius() - 1 - xL <= 0) {
+                        ball.setX(ball.getRadius());
+                    } else {
+                        ball.setX(x - 1 - xL);
+                    }
                 }
+//                if (ball.getX() - ball.getRadius() <= 0) {
+//                    ball.setDegree(360 - degree);
+//                    ball.setX(x + 1);
+//                } else {
+//                    ball.setX(x - 1);
+//                }
                 //碰撞到布局边界
                 if (ball.getY() - ball.getRadius() <= 0) {
                     ball.setDegree(360 - degree + 180);
-                    ball.setY(y + 1);
+                    ball.setY(y + 1 + yL);
                 } else {
-                    ball.setY(y - 1);
+                    if (y - ball.getRadius() - 1 - yL <= 0) {
+                        ball.setY(ball.getRadius());
+                    } else {
+                        ball.setY(y - 1 - yL);
+                    }
                 }
             }
         }
