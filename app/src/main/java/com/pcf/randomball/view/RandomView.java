@@ -219,12 +219,6 @@ public class RandomView extends View {
                         ball.setX(x - 1 - xL);
                     }
                 }
-//                if (ball.getX() - ball.getRadius() <= 0) {
-//                    ball.setDegree(360 - degree);
-//                    ball.setX(x + 1);
-//                } else {
-//                    ball.setX(x - 1);
-//                }
                 //碰撞到布局边界
                 if (ball.getY() - ball.getRadius() <= 0) {
                     ball.setDegree(360 - degree + 180);
