@@ -14,7 +14,7 @@ public class BallView extends View {
 
     int radius;//半径大小  单位px
     int color;//色值
-    int bgAlpha;//透明度
+    int bgAlpha;//透明度 0-255
     long lifeSpan =-1;//寿命
     long speed =-1;//速度
     long degree =-1;//方向值大小为 0-360
@@ -23,7 +23,13 @@ public class BallView extends View {
         super(context);
         this.radius = radius;
         this.color = color;
-        this.bgAlpha = alpha;
+        if(alpha>0&&alpha<255){
+            this.bgAlpha = alpha;
+        }else if(alpha>255){
+            this.bgAlpha  = 255;
+        }else {
+            this.bgAlpha  = 0;
+        }
     }
 
     public BallView(Context context, AttributeSet attrs) {
