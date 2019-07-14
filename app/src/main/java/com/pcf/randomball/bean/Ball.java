@@ -28,7 +28,7 @@ public class Ball {
         this.y = y;
         //生成一个在0-359范围内的随机数 为小球的方向
         this.degree = new Random().nextInt(360);
-        this.speed = new Random().nextInt(3)+1;
+        this.speed = new Random().nextInt(10)+1;
         if (degree == 0) {
             axisX = 0;
             axisY = 1;

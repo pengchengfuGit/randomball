@@ -19,11 +19,8 @@ public class RandomView extends View {
     private int height;
     private int width;
     private long maxBallNumber = -1;
-    private int maxBall;
     private List<Ball> ballList = new ArrayList();
-    private HashMap distanceMap = new HashMap<Ball, Ball>();
-    private float minDistances[][] = {};
-
+    private HashMap distanceMap = new HashMap<Ball, Ball>();//存放与小球距离最近的一个小球
     private String TAG = "RandomLayout";
     private MyThread thread;
 
@@ -104,8 +101,8 @@ public class RandomView extends View {
      * 往布局添加小球
      */
     public void addBall(Ball ball) {
-        if (ball != null) {
-//            ballList.add(ball);
+        if (ball != null && ballList.size() < maxBallNumber) {
+            ballList.add(ball);
         }
     }
 
@@ -117,10 +114,6 @@ public class RandomView extends View {
             ballList.remove(ball);
     }
 
-    public void randomBall() {
-//        addView(new BallView(getContext(),50, Color.BLUE, 50));
-    }
-
     public void actionBall() {
         for (int i = 0; i < ballList.size(); i++) {
             Ball ball1 = ballList.get(i);
@@ -129,25 +122,25 @@ public class RandomView extends View {
             int degree = ball1.getDegree();
 
             //按照0-360度划分四个象限
+            int xL = ceil(Math.sin(degree / Math.PI * 2) * ball1.getSpeed());
+            int yL = ceil(Math.cos(degree / Math.PI * 2) * ball1.getSpeed());
+
             if (degree >= 0 && degree < 90) {
-                //按10等份去分配X轴与Y轴的位移值
-                int xL = degree / 9;
-                int yL = 10 - degree / 9;
-                //第一象限 碰撞到布局边界
+                //第一象限 碰撞到布局右边界
                 if (ball1.getX() + ball1.getRadius() >= width) {
                     ball1.setDegree(360 - degree);
-                    ball1.setX(x1 - ball1.getRadius());
+                    ball1.setX(x1 - xL);
                 } else {
-                    if (x1 + ball1.getRadius() + 1 + xL >= width) {
+                    if (x1 + ball1.getRadius() + xL >= width) {
                         ball1.setX(width - ball1.getRadius());
                     } else {
-                        ball1.setX(x1 + 1 + xL);
+                        ball1.setX(x1 + xL);
                     }
                 }
-                //碰撞到布局边界
+                //碰撞到布局上边界
                 if (ball1.getY() - ball1.getRadius() <= 0) {
                     ball1.setDegree(180 - degree);
-                    ball1.setY(y1 + 1 + yL);
+                    ball1.setY(y1 + yL);
                 } else {
                     if (y1 - ball1.getRadius() - 1 - yL <= 0) {
                         ball1.setY(ball1.getRadius());
@@ -157,77 +150,73 @@ public class RandomView extends View {
                 }
             } else if (degree >= 90 && degree < 180) {
                 //第二象限 碰撞到布局边界
-                int xL = 10 - (degree / 9 - 10);
-                int yL = (degree / 9 - 10);
                 if (ball1.getX() + ball1.getRadius() >= width) {
                     ball1.setDegree(180 - degree + 180);
-                    ball1.setX(x1 - ball1.getRadius());
+                    ball1.setX(x1 - xL);
                 } else {
-                    if (x1 + ball1.getRadius() + 1 + xL >= width) {
+                    if (x1 + ball1.getRadius() + xL >= width) {
                         ball1.setX(width - ball1.getRadius());
                     } else {
-                        ball1.setX(x1 + 1 + xL);
+                        ball1.setX(x1 + xL);
                     }
                 }
                 //碰撞到布局边界
                 if (ball1.getY() + ball1.getRadius() >= height) {
                     ball1.setDegree(90 - degree + 90);
-                    ball1.setY(y1 - 1 - yL);
+                    ball1.setY(y1 - yL);
                 } else {
                     if (y1 + ball1.getRadius() + 1 + yL >= height) {
                         ball1.setY(height - ball1.getRadius());
                     } else {
-                        ball1.setY(y1 + 1 + yL);
+                        ball1.setY(y1 + yL);
                     }
                 }
             } else if (degree >= 180 && degree < 270) {
                 //第三象限 碰撞到布局边界
-                int xL = (degree / 9 - 20);
-                int yL = 10 - (degree / 9 - 20);
                 if (ball1.getX() - ball1.getRadius() <= 0) {
                     ball1.setDegree(360 - degree);
-                    ball1.setX(x1 + 1 + xL);
+                    ball1.setX(x1 + xL);
                 } else {
-                    if (x1 - ball1.getRadius() - 1 - xL <= 0) {
+                    if (x1 - ball1.getRadius() - xL <= 0) {
                         ball1.setX(ball1.getRadius());
                     } else {
-                        ball1.setX(x1 - 1 - xL);
+                        ball1.setX(x1 - xL);
                     }
                 }
                 //碰撞到布局边界
                 if (ball1.getY() + ball1.getRadius() >= height) {
                     ball1.setDegree(270 + 270 - degree);
-                    ball1.setY(y1 - 1 - yL);
+                    ball1.setY(y1 - yL);
                 } else {
-                    if (x1 + ball1.getRadius() + 1 + yL >= height) {
+                    if (x1 + ball1.getRadius() + yL >= height) {
                         ball1.setY(height - ball1.getRadius());
                     } else {
-                        ball1.setY(y1 + 1 + yL);
+                        ball1.setY(y1 + yL);
                     }
                 }
             } else if (degree >= 270 && degree < 360) {
                 //第四象限  碰撞到布局边界
-                int xL = 10 - (degree / 9 - 30);
-                int yL = (degree / 9 - 30);
+//                int xL = 10 - (degree / 9 - 30);
+//                int yL = (degree / 9 - 30);
                 if (ball1.getX() - ball1.getRadius() <= 0) {
                     ball1.setDegree(360 - degree);
-                    ball1.setX(x1 + 1 + xL);
+                    ball1.setX(x1 + xL);
                 } else {
                     if (x1 - ball1.getRadius() - 1 - xL <= 0) {
                         ball1.setX(ball1.getRadius());
                     } else {
-                        ball1.setX(x1 - 1 - xL);
+                        ball1.setX(x1 - xL);
                     }
                 }
                 //碰撞到布局边界
                 if (ball1.getY() - ball1.getRadius() <= 0) {
                     ball1.setDegree(360 - degree + 180);
-                    ball1.setY(y1 + 1 + yL);
+                    ball1.setY(y1 + yL);
                 } else {
-                    if (y1 - ball1.getRadius() - 1 - yL <= 0) {
+                    if (y1 - ball1.getRadius() - yL <= 0) {
                         ball1.setY(ball1.getRadius());
                     } else {
-                        ball1.setY(y1 - 1 - yL);
+                        ball1.setY(y1 - yL);
                     }
                 }
             }
@@ -251,8 +240,6 @@ public class RandomView extends View {
                         if (distance1 < distance2) {
                             distanceMap.put(ball1, ball2);
                         }
-//                      minDistances[i][0] = distance;
-//                      minDistances[i][1] = z;
                     }
                 }
             }
@@ -282,11 +269,32 @@ public class RandomView extends View {
                 actionBall();
                 postInvalidate(); //通知更新界面，会重新调用onDraw()函数
                 try {
-                    sleep(10);
+                    sleep(1000 / 36);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (thread != null)
+            thread.stop();
+    }
+
+    /**
+     * 对于三角函数的取值进行向上与向下取整
+     * 避免出现零的情况取整
+     * 正数向上取整
+     * 负数向下取整
+     */
+    public int ceil(double num) {
+        if (num > 0) {
+            return (int) Math.ceil(num);
+        } else {
+            return -(int) Math.floor(num);
         }
     }
 }
