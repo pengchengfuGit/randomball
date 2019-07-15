@@ -13,11 +13,10 @@ public class Ball {
     int x = -1;
     int y = -1;
     int degree;//角度
-    int axisX;
-    int axisY;
     HashMap distanceMap = new HashMap<Ball, Integer>();
 
     public Ball() {
+
     }
 
     public Ball(int radius, int color, int alpha, int x, int y) {
@@ -29,31 +28,6 @@ public class Ball {
         //生成一个在0-359范围内的随机数 为小球的方向
         this.degree = new Random().nextInt(360);
         this.speed = new Random().nextInt(10)+1;
-        if (degree == 0) {
-            axisX = 0;
-            axisY = 1;
-        } else if (degree == 90) {
-            axisX = 1;
-            axisY = 0;
-        } else if (degree == 180) {
-            axisX = 0;
-            axisY = -1;
-        } else if (degree == 270) {
-            axisX = -1;
-            axisY = 0;
-        } else if (degree > 0 && degree < 90) {
-            axisX = 1;
-            axisY = 1;
-        } else if (degree > 90 && degree < 180) {
-            axisX = 1;
-            axisY = -1;
-        } else if (degree > 180 && degree < 270) {
-            axisX = -1;
-            axisY = -1;
-        } else if (degree > 270 && degree < 360) {
-            axisX = -1;
-            axisY = 1;
-        }
     }
 
     public Ball(int radius, int color, int alpha, long lifeSpan) {
@@ -133,21 +107,5 @@ public class Ball {
 
     public void setDistanceMap(HashMap distanceMap) {
         this.distanceMap = distanceMap;
-    }
-
-    public int getAxisX() {
-        return axisX;
-    }
-
-    public void setAxisX(int axisX) {
-        this.axisX = axisX;
-    }
-
-    public int getAxisY() {
-        return axisY;
-    }
-
-    public void setAxisY(int axisY) {
-        this.axisY = axisY;
     }
 }
