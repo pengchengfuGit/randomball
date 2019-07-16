@@ -49,34 +49,30 @@ public class RandomView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.d(TAG, "onMeasure ");
         width = getMeasuredWidth();
         height = getMeasuredHeight();
-        Log.d(TAG, "width " + width);
-        Log.d(TAG, "height " + height);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         Log.d(TAG, "onLayout ");
         ballList.add(new Ball(50, Color.BLUE, 700, width / 2, height / 2));
-        ballList.add(new Ball(60, Color.BLACK, 600, width / 4*3, height / 4*3));
+        ballList.add(new Ball(60, Color.BLACK, 600, width / 4 * 3, height / 4 * 3));
         ballList.add(new Ball(70, Color.RED, 800, 100, 100));
         // 记录某个小球，距离它最近的小球的距离，这个小球的下标
         for (int i = 0; i < ballList.size(); i++) {
             distanceMap.put(ballList.get(i), new Ball());
         }
-        //避免重复创建线程
+//        避免重复创建线程
+        /**/
         if (thread == null) {
             thread = new MyThread();
         }
         thread.start();
     }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d(TAG, "onDraw ");
         for (int i = 0; i < ballList.size(); i++) {
             Ball ball = ballList.get(i);
             //实例化画笔对象
@@ -96,7 +92,6 @@ public class RandomView extends View {
             canvas.drawCircle(ball.getX(), ball.getY(), ball.getRadius(), paint);
         }
     }
-
     public long getMaxBallNumber() {
         return maxBallNumber;
     }
@@ -129,21 +124,18 @@ public class RandomView extends View {
             int x1 = ball1.getX();
             int y1 = ball1.getY();
             int degree = ball1.getDegree();
-            int xL =0;
-            int yL =0;
-            if(90<degree&&degree<270){
+            int xL = 0;
+            int yL = 0;
+            if (90 < degree && degree < 270) {
                 //按照0-360度划分四个象限
                 yL = ceil(Math.sin(degree / Math.PI * 2) * ball1.getSpeed());
                 xL = ceil(Math.cos(degree / Math.PI * 2) * ball1.getSpeed());
-            }else {
+            } else {
                 //按照0-360度划分四个象限
                 xL = ceil(Math.sin(degree / Math.PI * 2) * ball1.getSpeed());
                 yL = ceil(Math.cos(degree / Math.PI * 2) * ball1.getSpeed());
             }
             //按照0-360度划分四个象限
-
-                Log.d(TAG,""+xL);
-            Log.d(TAG,""+yL);
             if (degree >= 0 && degree < 90) {
                 //第一象限 碰撞到布局右边界
                 if (ball1.getX() + ball1.getRadius() >= width) {
@@ -244,16 +236,11 @@ public class RandomView extends View {
 
     private void countDistance(int i, Ball ball1, int x1, int y1) {
         //拿当前小球的坐标,半径与其它小球的坐标,半径  找出距离当前小球最近的球
+        Ball b = (Ball) distanceMap.get(ball1);
+
         for (int z = 0; z < ballList.size(); z++) {
             if (z != i) {
                 Ball ball2 = ballList.get(z);
-
-                int x2 = ball2.getX();
-                int y2 = ball2.getY();
-                int distance1 = Math.abs(x1 - x2) * Math.abs(x1 - x2)
-                        + Math.abs(y1 - y2) * Math.abs(y1 - y2);
-
-                Ball b = (Ball) distanceMap.get(ball1);
                 /**
                  * 当小球坐标x,y均为-1时，说明数据刚初始化
                  * 还没保存距离最近的小球，直接保存
@@ -261,6 +248,11 @@ public class RandomView extends View {
                 if (b.getX() == -1 && b.getY() == -1) {
                     distanceMap.put(ball1, ball2);
                 } else {
+                    int x2 = ball2.getX();
+                    int y2 = ball2.getY();
+                    int distance1 = Math.abs(x1 - x2) * Math.abs(x1 - x2)
+                            + Math.abs(y1 - y2) * Math.abs(y1 - y2);
+
                     int distance2 = Math.abs(x1 - b.getX()) * Math.abs(x1 - b.getX())
                             + Math.abs(y1 - b.getY()) * Math.abs(y1 - b.getY());
                     if (distance1 < distance2) {
@@ -270,12 +262,16 @@ public class RandomView extends View {
             }
         }
     }
-
+/**/
     private void checkoutBall() {
         //判断是否有发生碰撞的小球
         for (int i = 0; i < ballList.size(); i++) {
             Ball ball1 = ballList.get(i);
             Ball ball2 = (Ball) distanceMap.get(ball1);
+
+            if (ball2.getX() == -1 && ball2.getY() == -1) {
+                continue;
+            }
             int distance2 = Math.abs(ball1.getX() - ball2.getX()) * Math.abs(ball1.getX() - ball2.getX())
                     + Math.abs(ball1.getY() - ball2.getY()) * Math.abs(ball1.getY() - ball2.getY());
             //最小距离小于阈值，发生碰撞 计算碰撞角度
@@ -286,12 +282,12 @@ public class RandomView extends View {
                 int x2 = ball2.getX();
                 int y2 = ball2.getY();
 //                double degree = Math.atan((float) (Math.abs(y1 - y2) / Math.abs(x1 - x2)));
-//                Log.d(TAG,"checkoutBall   "+degree);
                 int temp = ball1.getDegree();
                 ball1.setDegree(ball2.getDegree());
                 ball2.setDegree(temp);
                 //发生碰撞 重新初始化数据
                 distanceMap.put(ball2, new Ball());
+                distanceMap.put(ball1, new Ball());
             }
         }
     }
