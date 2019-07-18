@@ -70,6 +70,7 @@ public class RandomView extends View {
         }
         thread.start();
     }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -92,6 +93,7 @@ public class RandomView extends View {
             canvas.drawCircle(ball.getX(), ball.getY(), ball.getRadius(), paint);
         }
     }
+
     public long getMaxBallNumber() {
         return maxBallNumber;
     }
@@ -153,10 +155,10 @@ public class RandomView extends View {
                     ball1.setDegree(180 - degree);
                     ball1.setY(y1 + yL);
                 } else {
-                    if (y1 - ball1.getRadius() - 1 - yL <= 0) {
+                    if (y1 - ball1.getRadius() - yL <= 0) {
                         ball1.setY(ball1.getRadius());
                     } else {
-                        ball1.setY(y1 - 1 - yL);
+                        ball1.setY(y1 - yL);
                     }
                 }
             } else if (degree >= 90 && degree < 180) {
@@ -176,7 +178,7 @@ public class RandomView extends View {
                     ball1.setDegree(90 - degree + 90);
                     ball1.setY(y1 - yL);
                 } else {
-                    if (y1 + ball1.getRadius() + 1 + yL >= height) {
+                    if (y1 + ball1.getRadius() + yL >= height) {
                         ball1.setY(height - ball1.getRadius());
                     } else {
                         ball1.setY(y1 + yL);
@@ -211,7 +213,7 @@ public class RandomView extends View {
                     ball1.setDegree(360 - degree);
                     ball1.setX(x1 + xL);
                 } else {
-                    if (x1 - ball1.getRadius() - 1 - xL <= 0) {
+                    if (x1 - ball1.getRadius() - xL <= 0) {
                         ball1.setX(ball1.getRadius());
                     } else {
                         ball1.setX(x1 - xL);
@@ -262,9 +264,11 @@ public class RandomView extends View {
             }
         }
     }
-/**/
+
+    /**
+     * 判断是否有发生碰撞的小球
+     */
     private void checkoutBall() {
-        //判断是否有发生碰撞的小球
         for (int i = 0; i < ballList.size(); i++) {
             Ball ball1 = ballList.get(i);
             Ball ball2 = (Ball) distanceMap.get(ball1);
@@ -281,10 +285,52 @@ public class RandomView extends View {
                 int y1 = ball1.getY();
                 int x2 = ball2.getX();
                 int y2 = ball2.getY();
-//                double degree = Math.atan((float) (Math.abs(y1 - y2) / Math.abs(x1 - x2)));
-                int temp = ball1.getDegree();
-                ball1.setDegree(ball2.getDegree());
-                ball2.setDegree(temp);
+                //两球的角度差为180  即两球正碰 交换运动方向
+                if (Math.abs(ball1.getDegree() - ball2.getDegree()) == 180) {
+                    int temp = ball1.getDegree();
+                    ball1.setDegree(ball2.getDegree());
+                    ball2.setDegree(temp);
+                } else if (y1 == y2) {
+                    //正弦值不存在   角度为90
+                    if (x1 > x2) {
+                        ball1.setDegree(90);
+                        ball2.setDegree(270);
+                    } else {
+                        ball1.setDegree(270);
+                        ball2.setDegree(90);
+                    }
+                } else {
+                    //斜碰  两球圆心连接线的角度做反向运动
+                    float tan = (x1 - x2) / (y1 - y2);
+                    //正弦对应的角度在[-90,90]   在这取绝对值让角度值为正值
+                    int angle = (int) Math.abs(Math.atan(tan));
+                    if (x1 > x2 && y1 > y2) {
+                        //正弦值为正数    角度为[0,90] ball1在右下   ball2在左上
+                        ball1.setDegree(angle + 90);
+                        ball2.setDegree(angle + 270);
+                    } else if (x1 > x2 && y1 < y2) {
+                        //正弦值为负数   角度为[-90,0] ball1在右上   ball2在左下
+                        ball1.setDegree(90 - angle);
+                        ball2.setDegree(270 - angle);
+                    } else if (x1 < x2 && y1 > y2) {
+                        //正弦值为负数   角度为[-90,0] ball1在右下   ball2在左上
+                        ball1.setDegree(270 - angle);
+                        ball2.setDegree(90 - angle);
+                    } else if (x1 < x2 && y1 < y2) {
+                        //正弦值为正数   角度为[0,90] ball1在左上   ball2在右下
+                        ball1.setDegree(angle + 270);
+                        ball2.setDegree(angle + 90);
+                    } else if (x1 == x1) {
+                        //正弦值为0  angle为0
+                        if (y1 > y2) {
+                            ball1.setDegree(180);
+                            ball2.setDegree(angle);
+                        } else {
+                            ball1.setDegree(angle);
+                            ball2.setDegree(180);
+                        }
+                    }
+                }
                 //发生碰撞 重新初始化数据
                 distanceMap.put(ball2, new Ball());
                 distanceMap.put(ball1, new Ball());
