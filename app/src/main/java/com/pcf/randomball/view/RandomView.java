@@ -22,11 +22,11 @@ public class RandomView extends View {
     private int height;
     private int width;
     private long maxBallNumber = -1;
-    private List<Ball> ballList = new ArrayList();
+    private volatile List<Ball> ballList = new ArrayList();
     /**
      * 存放与小球距离最近的一个小球
      */
-    private HashMap distanceMap = new HashMap<Ball, Ball>();
+    private volatile HashMap distanceMap = new HashMap<Ball, Ball>();
     private String TAG = "RandomLayout";
     private MyThread thread;
 
@@ -58,7 +58,7 @@ public class RandomView extends View {
         Log.d(TAG, "onLayout ");
         ballList.add(new Ball(50, Color.BLUE, 700, width / 2, height / 2));
         ballList.add(new Ball(60, Color.BLACK, 600, width / 4 * 3, height / 4 * 3));
-        ballList.add(new Ball(70, Color.RED, 800, 100, 100));
+//        ballList.add(new Ball(70, Color.RED, 800, 100, 100));
         // 记录某个小球，距离它最近的小球的距离，这个小球的下标
         for (int i = 0; i < ballList.size(); i++) {
             distanceMap.put(ballList.get(i), new Ball());
@@ -231,6 +231,8 @@ public class RandomView extends View {
                     }
                 }
             }
+            //通知更新界面，会重新调用onDraw()函数
+            postInvalidate();
             countDistance(i, ball1, x1, y1);
         }
         checkoutBall();
@@ -343,7 +345,6 @@ public class RandomView extends View {
         public void run() {
             while (true) {
                 actionBall();
-                postInvalidate(); //通知更新界面，会重新调用onDraw()函数
                 try {
 //                    sleep(1000 / 36);
                     sleep(10);
