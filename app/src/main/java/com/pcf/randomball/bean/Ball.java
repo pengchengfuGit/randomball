@@ -27,7 +27,7 @@ public class Ball {
         this.y = y;
         //生成一个在0-359范围内的随机数 为小球的方向
         this.degree = new Random().nextInt(360);
-        this.speed = new Random().nextInt(10)+1;
+        this.speed = new Random().nextInt(5)+1;
     }
 
     public Ball(int radius, int color, int alpha, long lifeSpan) {
@@ -108,4 +108,5 @@ public class Ball {
     public void setDistanceMap(HashMap distanceMap) {
         this.distanceMap = distanceMap;
     }
+
 }

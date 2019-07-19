@@ -13,6 +13,9 @@ import com.pcf.randomball.bean.Ball;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 随机小球View
@@ -23,6 +26,7 @@ public class RandomView extends View {
     private int width;
     private long maxBallNumber = -1;
     private List<Ball> ballList = new ArrayList();
+    private boolean runing = true;
     /**
      * 存放与小球距离最近的一个小球
      */
@@ -58,13 +62,12 @@ public class RandomView extends View {
         Log.d(TAG, "onLayout ");
         ballList.add(new Ball(50, Color.BLUE, 700, width / 2, height / 2));
         ballList.add(new Ball(60, Color.BLACK, 600, width / 4 * 3, height / 4 * 3));
-        ballList.add(new Ball(70, Color.RED, 800, 100, 100));
+//        ballList.add(new Ball(70, Color.RED, 800, 100, 100));
         // 记录某个小球，距离它最近的小球的距离，这个小球的下标
         for (int i = 0; i < ballList.size(); i++) {
             distanceMap.put(ballList.get(i), new Ball());
         }
 //        避免重复创建线程
-        /**/
         if (thread == null) {
             thread = new MyThread();
         }
@@ -145,6 +148,7 @@ public class RandomView extends View {
                     ball1.setX(x1 - xL);
                 } else {
                     if (x1 + ball1.getRadius() + xL >= width) {
+                        ball1.setDegree(360 - degree);
                         ball1.setX(width - ball1.getRadius());
                     } else {
                         ball1.setX(x1 + xL);
@@ -156,6 +160,7 @@ public class RandomView extends View {
                     ball1.setY(y1 + yL);
                 } else {
                     if (y1 - ball1.getRadius() - yL <= 0) {
+                        ball1.setDegree(180 - degree);
                         ball1.setY(ball1.getRadius());
                     } else {
                         ball1.setY(y1 - yL);
@@ -168,6 +173,7 @@ public class RandomView extends View {
                     ball1.setX(x1 - xL);
                 } else {
                     if (x1 + ball1.getRadius() + xL >= width) {
+                        ball1.setDegree(180 - degree + 180);
                         ball1.setX(width - ball1.getRadius());
                     } else {
                         ball1.setX(x1 + xL);
@@ -179,6 +185,7 @@ public class RandomView extends View {
                     ball1.setY(y1 - yL);
                 } else {
                     if (y1 + ball1.getRadius() + yL >= height) {
+                        ball1.setDegree(90 - degree + 90);
                         ball1.setY(height - ball1.getRadius());
                     } else {
                         ball1.setY(y1 + yL);
@@ -191,6 +198,7 @@ public class RandomView extends View {
                     ball1.setX(x1 + xL);
                 } else {
                     if (x1 - ball1.getRadius() - xL <= 0) {
+                        ball1.setDegree(360 - degree);
                         ball1.setX(ball1.getRadius());
                     } else {
                         ball1.setX(x1 - xL);
@@ -202,6 +210,7 @@ public class RandomView extends View {
                     ball1.setY(y1 - yL);
                 } else {
                     if (x1 + ball1.getRadius() + yL >= height) {
+                        ball1.setDegree(270 + 270 - degree);
                         ball1.setY(height - ball1.getRadius());
                     } else {
                         ball1.setY(y1 + yL);
@@ -214,6 +223,7 @@ public class RandomView extends View {
                     ball1.setX(x1 + xL);
                 } else {
                     if (x1 - ball1.getRadius() - xL <= 0) {
+                        ball1.setDegree(360 - degree);
                         ball1.setX(ball1.getRadius());
                     } else {
                         ball1.setX(x1 - xL);
@@ -225,6 +235,7 @@ public class RandomView extends View {
                     ball1.setY(y1 + yL);
                 } else {
                     if (y1 - ball1.getRadius() - yL <= 0) {
+                        ball1.setDegree(360 - degree + 180);
                         ball1.setY(ball1.getRadius());
                     } else {
                         ball1.setY(y1 - yL);
@@ -232,6 +243,7 @@ public class RandomView extends View {
                 }
             }
             countDistance(i, ball1, x1, y1);
+            postInvalidate();
         }
         checkoutBall();
     }
@@ -341,9 +353,8 @@ public class RandomView extends View {
     private class MyThread extends Thread {
         @Override
         public void run() {
-            while (true) {
+            while (runing) {
                 actionBall();
-                postInvalidate(); //通知更新界面，会重新调用onDraw()函数
                 try {
 //                    sleep(1000 / 36);
                     sleep(10);
@@ -357,9 +368,7 @@ public class RandomView extends View {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (thread != null) {
-            thread.stop();
-        }
+        runing = false;
     }
 
     /**
